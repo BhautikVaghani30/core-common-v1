@@ -16,18 +16,22 @@
 
 package com.core.v1.common.model;
 
+import com.core.v1.common.enums.CoreCounty;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class CoreRequestContext {
-
-  private String country;
+  private CoreCounty country;
   private String locale;
   private String userId;
   private String sessionId;

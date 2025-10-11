@@ -16,7 +16,7 @@
 
 package com.core.v1.common.webclient;
 
-import com.core.v1.common.config.CoreWebClientBuilderConfiguration;
+import com.core.v1.common.config.webclient.CoreWebClientBuilderConfiguration;
 import com.core.v1.common.enums.CoreWebClientBuilderType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

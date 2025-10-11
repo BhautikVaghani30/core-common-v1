@@ -107,7 +107,7 @@ public final class CoreRequestContextToQueryParamExchange implements ExchangeFil
 
     final URI newUri =
         UriComponentsBuilder.fromUri(originalRequest.url())
-            .queryParam(CoreQueryParamKeys.X_ULTA_COUNTRY.getValue(), context.getCountry())
+            .queryParam(CoreQueryParamKeys.X_ULTA_COUNTRY.getValue(), context.getCountry().name())
             .queryParam(
                 CoreQueryParamKeys.X_ULTA_LOCALE.getValue(), formatLocale(context.getLocale()))
             .queryParamIfPresent(

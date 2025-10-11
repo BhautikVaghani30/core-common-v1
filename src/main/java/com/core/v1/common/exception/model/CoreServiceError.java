@@ -16,10 +16,10 @@
 
 package com.core.v1.common.exception.model;
 
+import com.core.v1.common.exception.CoreServiceException;
 import java.io.Serial;
 import java.io.Serializable;
-
-import com.core.v1.common.exception.CoreServiceException;
+import lombok.Data;
 
 /**
  * Represents a detailed service error.
@@ -27,19 +27,23 @@ import com.core.v1.common.exception.CoreServiceException;
  * <p>This class is used to encapsulate the error code associated with a {@link
  * CoreServiceException}.
  */
-public record CoreServiceError(String code) implements Serializable {
+@Data
+public class CoreServiceError implements Serializable {
   @Serial private static final long serialVersionUID = 2465172041950251807L;
+
+  private String code;
 
   /**
    * Constructs a new CoreServiceError with the specified error code.
    *
    * @param code The error code identifying the issue.
    */
-  public CoreServiceError {
+  public CoreServiceError(String code) {
+    this.code = code;
   }
 
   @Override
   public String toString() {
-    return "CoreServiceError{" + "code='" + code() + "'}";
+    return "CoreServiceError{" + "code='" + getCode() + '\'' + '}';
   }
 }

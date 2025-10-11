@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.core.v1.common.config;
+package com.core.v1.common.config.webclient;
 
 import com.core.v1.common.constant.CoreCommonConstants;
 import com.core.v1.common.constant.CoreWebClientBuilderTypeConstants;
