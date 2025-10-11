@@ -17,6 +17,7 @@
 package com.core.v1.common.utils;
 
 import com.core.v1.common.constant.CoreCommonConstants;
+import com.core.v1.common.constant.CoreErrorMessageConstants;
 import com.core.v1.common.exception.CoreServiceException;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -62,7 +63,7 @@ public final class CoreJsonParserUtils {
       return MAPPER.writeValueAsString(object);
     } catch (JsonProcessingException e) {
       LOG.error("getJsonFromObject, object :: {}, error :: {}", object, e);
-      throw new CoreServiceException(e.getMessage());
+      throw new CoreServiceException(CoreErrorMessageConstants.TECHNICAL_ERROR);
     }
   }
 

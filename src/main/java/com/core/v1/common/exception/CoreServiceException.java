@@ -19,8 +19,10 @@ package com.core.v1.common.exception;
 import com.core.v1.common.exception.model.CoreAuditData;
 import com.core.v1.common.exception.model.CoreServiceError;
 import com.core.v1.common.i18n.CoreResourceManager;
+import com.core.v1.common.utils.CoreJsonParserUtils;
 import java.io.Serial;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Custom runtime exception for service-level errors.
@@ -29,6 +31,7 @@ import lombok.Getter;
  * application. It encapsulates an HTTP status code, a detailed error object, and optional audit
  * data for tracking.
  */
+@Slf4j
 @Getter
 public class CoreServiceException extends RuntimeException {
 
@@ -73,6 +76,10 @@ public class CoreServiceException extends RuntimeException {
     String errorResource = CoreResourceManager.getMessageKey(messageKey);
     this.httpCode = CoreResourceManager.getHttpCode(errorResource);
     this.error = createServiceError(messageKey);
+    log.debug(
+        "CoreServiceException :: constructor : httpCode : {}, error : {}",
+        httpCode,
+        CoreJsonParserUtils.getJsonFromObject(error));
   }
 
   /**

@@ -19,6 +19,7 @@ package com.core.v1.common.i18n;
 import com.core.v1.common.model.response.CoreMessage;
 import java.util.regex.Pattern;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.NoSuchMessageException;
@@ -30,9 +31,10 @@ import org.springframework.util.ObjectUtils;
  * Class provides capabilities to support internationalization messages by reading them from locale
  * specific resource bundles
  */
+@Slf4j
 public final class CoreResourceManager {
 
-  private static final int CHK_LEN = 3;
+  private static final int CHK_LEN = 2;
   private static final int INDEX_0 = 0;
   private static final int INDEX_1 = 1;
   private static final Logger LOG = LoggerFactory.getLogger(CoreResourceManager.class);

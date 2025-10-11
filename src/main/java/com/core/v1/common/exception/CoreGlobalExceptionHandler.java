@@ -23,11 +23,13 @@ import com.core.v1.common.model.response.CoreMessage;
 import com.core.v1.common.model.response.CoreMeta;
 import com.core.v1.common.model.response.CoreResponse;
 import com.core.v1.common.service.CoreAuditService;
+import com.core.v1.common.utils.CoreJsonParserUtils;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -46,6 +48,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @ControllerAdvice
 @RestController
+@Slf4j
 public class CoreGlobalExceptionHandler {
 
   private static final Logger LOG = LoggerFactory.getLogger(CoreGlobalExceptionHandler.class);
@@ -74,6 +77,10 @@ public class CoreGlobalExceptionHandler {
   @ExceptionHandler(CoreServiceException.class)
   public final ResponseEntity<CoreResponse<?>> handleCoreServiceException(
       @NonNull final CoreServiceException ex) {
+    log.debug(
+        "CoreGlobalException : handleCoreServiceException :: exception : {}, and code : {}",
+        CoreJsonParserUtils.getJsonFromObject(ex),
+        CoreJsonParserUtils.getJsonFromObject(ex.getError().getCode()));
     final CoreResponse<?> coreResponse =
         CoreResponse.create(
             resource ->
@@ -83,12 +90,14 @@ public class CoreGlobalExceptionHandler {
                     .withMessages(
                         Collections.singletonList(
                             CoreMessage.builder()
-                                .code(ex.getError().code())
+                                .code(ex.getError().getCode())
                                 .type(CoreMessage.CoreMessageType.ERROR.toString())
                                 .build())));
 
     handleAuditing(ex);
-
+    log.debug(
+        "CoreGlobalExceptionHandler : handleCoreServiceException :: exception occurred : {}",
+        CoreJsonParserUtils.getJsonFromObject(coreResponse));
     return new ResponseEntity<>(coreResponse, HttpStatus.valueOf(ex.getHttpCode()));
   }
 
@@ -148,7 +157,9 @@ public class CoreGlobalExceptionHandler {
                                 .code(TECHNICAL_ERROR_CODE)
                                 .type(CoreMessage.CoreMessageType.ERROR.toString())
                                 .build())));
-
+    log.debug(
+        "CoreGlobalExceptionHandler : handleGenericException :: exception occurred : {}",
+        CoreJsonParserUtils.getJsonFromObject(coreResponse));
     return new ResponseEntity<>(coreResponse, HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
@@ -170,7 +181,7 @@ public class CoreGlobalExceptionHandler {
     if (configuredErrorMessages == null || configuredErrorMessages.isEmpty()) {
       LOG.debug(
           "Audit service is not available or has no error messages configured; skipping audit log for error code: {}",
-          ex.getError().code());
+          ex.getError().getCode());
       return;
     }
 
@@ -182,7 +193,7 @@ public class CoreGlobalExceptionHandler {
             messageKey ->
                 Objects.equals(
                     CoreResourceManager.getCode(CoreResourceManager.getMessageKey(messageKey)),
-                    ex.getError().code()))
+                    ex.getError().getCode()))
         .findFirst()
         .ifPresent(
             matchingMessageKey -> {

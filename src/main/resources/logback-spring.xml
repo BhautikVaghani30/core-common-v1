@@ -8,10 +8,10 @@
                     <fieldName>timestamp</fieldName>
                 </timestamp>
                 <version/>
-                <message/>
                 <loggerName>
                     <fieldName>logger</fieldName>
                 </loggerName>
+                <message/>
                 <threadName>
                     <fieldName>thread</fieldName>
                 </threadName>
