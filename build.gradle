@@ -2,11 +2,12 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
+	id 'maven-publish'
 }
 
 group = 'com.core.v1'
 version = '1.0.0'
-description = 'Demo project for Spring Boot'
+description = 'Common utility library for Spring Boot and Java projects'
 
 java {
 	toolchain {
@@ -51,4 +52,25 @@ dependencies {
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+
+			groupId = 'com.core.v1'
+			artifactId = 'common'
+			version = '1.0.0'
+
+			pom {
+				name = 'Common Library'
+				description = 'Common utility library for Spring Boot and Java projects'
+				url = 'https://example.com/common'
+			}
+		}
+	}
+	repositories {
+		mavenLocal()
+	}
 }
