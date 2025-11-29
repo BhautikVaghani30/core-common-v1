@@ -1,56 +1,57 @@
 plugins {
-	// Use 'java-library' for reusable components
-	id 'java-library'
-
-	// Plugin required to publish artifacts (JAR files)
-	id 'maven-publish'
+    // Use alias from libs.versions.toml for cleaner plugin management
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
+    alias(libs.plugins.maven.publish)
+    id 'java-library'
 }
 
 group = 'com.core.v1'
 version = '1.0.0'
-description = 'Reusable Core Java Library'
+description = 'Core Java Library with Spring Boot dependencies'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
-/**
- * Defines versions for dependencies in a central location
- * to improve maintainability and consistency.
- */
-ext {
-	set('lombokVersion', '1.18.32')
-	set('commonsLang3Version', '3.14.0')
-	set('logstashLogbackVersion', '7.4')
-	set('jakartaPersistenceVersion', '3.1.0')
-	set('hibernateVersion', '6.5.2.Final')
-	set('pojomaticVersion', '2.2.0')
-	set('jacksonVersion', '2.17.1')
-	set('junitVersion', '5.10.2')
+// To build a library, the bootJar task should be disabled.
+// The standard 'jar' task will create the library JAR.
+bootJar {
+    enabled = false
+}
+jar {
+    enabled = true
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	compileOnly "org.projectlombok:lombok:${lombokVersion}"
-	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    // Spring Boot Starters
+    // The 'api' configuration exposes these dependencies to consumers of this library.
+    api libs.spring.boot.starter.web
+    api libs.spring.boot.starter.webflux
+    api libs.spring.boot.starter.aop
+    // spring-boot-starter-data-jpa correctly brings in Jakarta Persistence and Hibernate for Spring Boot 3
+    api libs.spring.boot.starter.data.jpa
 
-	implementation "org.apache.commons:commons-lang3:${commonsLang3Version}"
-	implementation "net.logstash.logback:logstash-logback-encoder:${logstashLogbackVersion}"
-	implementation "org.pojomatic:pojomatic-all:${pojomaticVersion}"
-	implementation "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    // Annotation Processors
+    // Versions for lombok and spring-boot-configuration-processor are managed by the Spring Boot BOM
+    annotationProcessor libs.spring.boot.configuration.processor
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 
-	// Use Jakarta Persistence API for modern Java (Java 17+)
-	implementation "jakarta.persistence:jakarta.persistence-api:${jakartaPersistenceVersion}"
-	implementation "org.hibernate.orm:hibernate-core:${hibernateVersion}"
+    // Common Libraries
+    implementation libs.commons.lang3
+    implementation libs.logstash.logback
+    implementation libs.pojomatic
 
-	// Testing dependencies
-	testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
-	testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    // Testing
+    testImplementation libs.spring.boot.starter.test
+    testImplementation libs.reactor.test
 }
 
 // ----------------------------------------------------
@@ -58,18 +59,19 @@ dependencies {
 // This block defines the artifact (JAR) and where to put it (local repository)
 // ----------------------------------------------------
 publishing {
-	publications {
-		mavenJava(MavenPublication) {
-			from components.java
-		}
-	}
-	// Use the standard mavenLocal() repository to enable the 'publishToMavenLocal' task.
-	repositories {
-		mavenLocal()
-	}
+    publications {
+        mavenJava(MavenPublication) {
+            // The 'java-library' plugin provides the 'java' component which includes API and implementation details.
+            from components.java
+            // Add metadata to the published POM file for better discoverability
+            pom.withXml { asNode().appendNode('description', project.description) }
+        }
+    }
+    repositories {
+        mavenLocal()
+    }
 }
 
-// Set up the standard testing platform
 tasks.named('test') {
-	useJUnitPlatform()
+    useJUnitPlatform()
 }

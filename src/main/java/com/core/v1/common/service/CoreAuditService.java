@@ -19,15 +19,15 @@ package com.core.v1.common.service;
 import com.core.v1.common.constant.CoreCommonConstants;
 import com.core.v1.common.exception.model.CoreAuditData;
 import java.util.List;
-import lombok.Getter;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.logging.MDC;
+import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Getter
 @Service
 @Slf4j
+@Data
 public class CoreAuditService {
 
   @Value("${core.audit.error.messages}")
