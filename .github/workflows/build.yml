@@ -40,6 +40,8 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        # Only upload the artifact for pushes to the 'develop' branch, and only from the Ubuntu build to conserve storage.
+        if: github.ref == 'refs/heads/develop' && matrix.os == 'ubuntu-latest'
         with:
-          name: common-jar-${{ matrix.os }}
+          name: common-jar
           path: build/libs/*.jar
