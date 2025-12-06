@@ -1,57 +1,66 @@
 plugins {
-    // Use alias from libs.versions.toml for cleaner plugin management
+    id 'java-library'
+    id 'idea'
+    id 'eclipse'
+    id 'jacoco'
+    id 'maven-publish'
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency.management)
-    alias(libs.plugins.maven.publish)
-    id 'java-library'
 }
 
-group = 'com.core.v1'
-version = '1.0.0'
-description = 'Core Java Library with Spring Boot dependencies'
+apply from: "${project.rootDir}/gradle/jacoco.gradle"
+
+group = project.property('projectGroup')
+version = project.property('projectVersion')
 
 java {
+    sourceCompatibility = JavaVersion.VERSION_21
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
-}
-
-// To build a library, the bootJar task should be disabled.
-// The standard 'jar' task will create the library JAR.
-bootJar {
-    enabled = false
-}
-jar {
-    enabled = true
 }
 
 repositories {
     mavenCentral()
 }
 
+bootJar {
+    enabled = false
+}
+
+jar {
+    enabled = true
+}
+
+
+tasks.register('sourceJar', Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = "sources"
+}
+
 dependencies {
-    // Spring Boot Starters
-    // The 'api' configuration exposes these dependencies to consumers of this library.
-    api libs.spring.boot.starter.web
-    api libs.spring.boot.starter.webflux
-    api libs.spring.boot.starter.aop
-    // spring-boot-starter-data-jpa correctly brings in Jakarta Persistence and Hibernate for Spring Boot 3
-    api libs.spring.boot.starter.data.jpa
+    // Spring Boot - versions managed by the Spring Boot Gradle plugin
+    implementation(libs.spring.boot.starter.webflux)
+    implementation(libs.spring.boot.starter.aop)
 
-    // Annotation Processors
-    // Versions for lombok and spring-boot-configuration-processor are managed by the Spring Boot BOM
-    annotationProcessor libs.spring.boot.configuration.processor
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
+    // implementation(libs.spring.boot.starter.data.jpa)
+    annotationProcessor(libs.spring.boot.configuration.processor)
 
-    // Common Libraries
-    implementation libs.commons.lang3
-    implementation libs.logstash.logback
-    implementation libs.pojomatic
+    // Lombok
+    compileOnly(libs.lombok)
+    annotationProcessor(libs.lombok)
+
+    // JSR305 Annotations
+    compileOnly(libs.findbugs.jsr305)
+
+    // Other libraries
+    implementation(libs.commons.lang3)
+    implementation(libs.logstash.logback)
+    implementation(libs.pojomatic)
 
     // Testing
-    testImplementation libs.spring.boot.starter.test
-    testImplementation libs.reactor.test
+    testImplementation(libs.spring.boot.starter.test)
+    testImplementation(libs.reactor.test)
 }
 
 // ----------------------------------------------------
@@ -61,10 +70,30 @@ dependencies {
 publishing {
     publications {
         mavenJava(MavenPublication) {
-            // The 'java-library' plugin provides the 'java' component which includes API and implementation details.
+            groupId = project.group
+            artifactId = project.name
+            version = project.version
             from components.java
-            // Add metadata to the published POM file for better discoverability
-            pom.withXml { asNode().appendNode('description', project.description) }
+            artifact sourceJar
+
+            pom {
+                name = project.property('pomName')
+                description = project.property('pomDescription')
+                url = project.property('pomUrl')
+                licenses {
+                    license {
+                        name = project.property('pomLicenseName')
+                        url = project.property('pomLicenseUrl')
+                    }
+                }
+                developers {
+                    developer {
+                        id = project.property('pomDeveloperId')
+                        name = project.property('pomDeveloperName')
+                        email = project.property('pomDeveloperEmail')
+                    }
+                }
+            }
         }
     }
     repositories {
@@ -72,6 +101,21 @@ publishing {
     }
 }
 
-tasks.named('test') {
+
+jar {
+    archiveBaseName.set(project.name)
+
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': project.version)
+    }
+}
+
+test {
     useJUnitPlatform()
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:unchecked"
+    options.encoding = 'UTF-8'
 }
