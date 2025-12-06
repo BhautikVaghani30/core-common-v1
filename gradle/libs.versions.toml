@@ -1,33 +1,36 @@
-# This file defines all dependency versions, libraries, and plugins
-# in a central, type-safe, and shareable way.
-# See: https://docs.gradle.org/current/userguide/platforms.html
-
 [versions]
 springBoot = "3.3.0"
 springDependencyManagement = "1.1.5"
 
+lombok = "1.18.32"
+findbugsJsr305 = "3.0.2"
 commonsLang3 = "3.14.0"
 logstashLogback = "7.4"
 pojomatic = "2.2.0"
+jacoco = "0.8.12"
 
 [libraries]
-# Spring Boot Starters - Versions are managed by the Spring Boot BOM
+# Spring Boot
 spring-boot-starter-web = { module = "org.springframework.boot:spring-boot-starter-web" }
 spring-boot-starter-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux" }
 spring-boot-starter-aop = { module = "org.springframework.boot:spring-boot-starter-aop" }
-spring-boot-starter-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa" }
 spring-boot-configuration-processor = { module = "org.springframework.boot:spring-boot-configuration-processor" }
+
+# Lombok
+lombok = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+
+# Findbugs JSR305
+findbugs-jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "findbugsJsr305" }
 
 # Common Libraries
 commons-lang3 = { module = "org.apache.commons:commons-lang3", version.ref = "commonsLang3" }
 logstash-logback = { module = "net.logstash.logback:logstash-logback-encoder", version.ref = "logstashLogback" }
 pojomatic = { module = "org.pojomatic:pojomatic-all", version.ref = "pojomatic" }
 
-# Testing - Versions are managed by the Spring Boot BOM
+# Testing
 spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 reactor-test = { module = "io.projectreactor:reactor-test" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependency-management = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
-maven-publish = { id = "maven-publish" }
