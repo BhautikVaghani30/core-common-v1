@@ -1,0 +1,45 @@
+// This script is applied to the root project to configure JaCoCo test coverage.
+
+// 1. Configure the JaCoCo extension with the version from the catalog
+jacoco {
+    toolVersion = libs.versions.jacoco.get()
+}
+
+// 2. Ensure the test report is generated after tests run
+tasks.named('test') {
+    finalizedBy tasks.named('jacocoTestReport')
+}
+
+// 3. Configure the JaCoCo test report
+tasks.named('jacocoTestReport') {
+    dependsOn tasks.named('test') // The report depends on the tests being executed
+    reports {
+        xml.required = true  // Needed for CI/CD tools like SonarQube
+        csv.required = false
+        html.outputLocation = layout.buildDirectory.dir('reports/jacoco')
+    }
+
+    // Exclude files from the coverage report (e.g., DTOs, configuration classes)
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: [
+                '**/model/**',
+                '**/config/**'
+        ])
+    }))
+}
+
+// 4. Add a task to verify coverage rules
+tasks.named('jacocoTestCoverageVerification', JacocoCoverageVerification) {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.8 // Enforce 80% line coverage
+            }
+        }
+    }
+}
+
+// 5. Make the main 'check' task depend on the coverage verification to enforce the rules
+tasks.named('check') {
+    dependsOn tasks.named('jacocoTestCoverageVerification')
+}
