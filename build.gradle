@@ -104,6 +104,7 @@ publishing {
 
 jar {
     archiveBaseName.set(project.name)
+    archiveClassifier.set('')
 
     manifest {
         attributes('Implementation-Title': project.name,
