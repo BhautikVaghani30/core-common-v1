@@ -57,7 +57,7 @@ To use a pre-configured `WebClient`, inject it into your Spring components using
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import com.core.v1.common.constant.CoreWebClientBuilderTypeConstants;
+import constant.com.core.township.common.CoreWebClientBuilderTypeConstants;
 
 @Service
 public class MyService {
@@ -112,3 +112,15 @@ This project is licensed under the **Apache 2.0 License**.
 ## Contact
 
 For questions or suggestions, please open an issue in the repository.
+
+## Version
+
+1.0.0 = LTS
+1.1.0 = remove @ComponentScan for i18n to resolve bean conflicts
+1.1.1 = added default exception handler for all microservice
+1.1.2 = added CoreHeaderFeaturesOutgoingExchange filter and CoreLocalDevelopmentConfig file
+1.1.3 = deprecated CoreServiceException to resolve conflict with microservice specific exception
+1.1.4 = remove deprecated CoreServiceException and remove globle exception handler// ?stanble version
+
+Implementing context
+1.1.5 = 
